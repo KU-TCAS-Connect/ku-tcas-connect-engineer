@@ -39,6 +39,9 @@ for idx, result in results.iterrows():
 # for thought in response.thought_process:
 #     print(f"- {thought}")
 # print(f"\nContext: {response.enough_context}")
+# print("\nResults:")
+# for idx, result in results.iterrows():
+#     print(f"Result {idx + 1}:\n{result['content']}\n")
 
 # # --------------------------------------------------------------
 # # Metadata filtering

@@ -50,7 +50,7 @@ for csv_file in csv_files:
     df = pd.read_csv(csv_file, sep=",")
     
     # Apply the prepare_record function with the file name
-    records_df = df.apply(prepare_record, axis=1, file_name=os.path.basename(csv_file))
+    records_df = df.apply(prepare_record, axis=1, file_name=os.path.splitext(os.path.basename(csv_file))[0])
     
     # Insert data into VectorStore
     vec.upsert(records_df)

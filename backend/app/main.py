@@ -10,6 +10,19 @@ from timescale_vector import client
 vec = VectorStore()
 app = FastAPI()
 
+# Add CORS middleware
+origins = [
+    "http://localhost:3000",  # React dev server
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Allows specified origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all HTTP methods
+    allow_headers=["*"],  # Allows all headers
+)
+
 # Define the request model
 class QueryRequest(BaseModel):
     query: str
