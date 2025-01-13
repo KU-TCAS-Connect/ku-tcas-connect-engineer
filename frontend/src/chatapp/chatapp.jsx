@@ -9,12 +9,29 @@ function ChatPage() {
     ]);
     const [input, setInput] = useState('');
 
-    const sendMessage = () => {
+    const sendMessage = async () => {
         if (input.trim() !== '') {
-            setMessages([...messages, { text: input, type: 'sent' }]);
+            // setMessages([...messages, { text: input, type: 'sent' }]);
+            setMessages((prevMessages) => [...prevMessages, { text: input, type: 'sent' }]);
             setInput('');
+
+            // console.log("Sending payload:", { query: input });
+
+            const response = await fetch("http://0.0.0.0:8000/rag-query", {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ query: input })  // Send as JSON object with "query" key
+            });
+    
+            const data = await response.json();
+            setMessages((prevMessages) => [...prevMessages, { text: data.response, type: 'received' }]);
+            // setMessages([...messages, { text: data.response, type: 'received' }]);
         }
     };
+    
 
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
@@ -36,9 +53,8 @@ function ChatPage() {
                             </div>
                         )}
                         <div
-                            className={`p-3 rounded-full max-w-xs ${
-                                msg.type === 'sent' ? 'bg-emerald-500 text-white' : 'bg-gray-300 text-black'
-                            }`}
+                            className={`p-3 rounded-large max-w-xs ${msg.type === 'sent' ? 'bg-emerald-500 text-white' : 'bg-gray-300 text-black'
+                                }`}
                         >
                             {msg.text}
                         </div>
