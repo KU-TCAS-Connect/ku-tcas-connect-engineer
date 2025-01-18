@@ -1,6 +1,7 @@
 from datetime import datetime
 from database.vector_store import VectorStore
 from services.synthesizer import Synthesizer
+from services.question_checker import QuestionChecker
 from timescale_vector import client
 
 # Initialize VectorStore
@@ -10,20 +11,33 @@ vec = VectorStore()
 # Shipping question
 # --------------------------------------------------------------
 
-relevant_question = "วิศวกรรมไฟฟ้า ภาคพิเศษ รอบ3 มีเกณฑ์การรับเป็นอย่างไรบ้างและรับกี่คนคะ"
-results = vec.search(relevant_question, limit=3)
+relevant_question = "วิศวสาขาเครื่องกล ภาคปกติ รอบ 1 โครงการเรียนล่วงหน้า มีเกณฑ์การรับอย่างไรบ้างคะ"
 
-response = Synthesizer.generate_response(question=relevant_question, context=results)
+is_complete, feedback, major, round_, program, department = QuestionChecker.check_query(relevant_question)
+print(f"Complete: {is_complete}")
 
-print(f"\n{response.answer}")
-print("\nThought process:")
-for thought in response.thought_process:
-    print(f"- {thought}")
-print(f"\nContext: {response.enough_context}")
-print("\nResults:")
-for idx, result in results.iterrows():
-    print(f"Result {idx + 1}:\n{result['content']}\n")
+if is_complete:
+    results = vec.search(relevant_question, limit=3)
 
+    response = Synthesizer.generate_response(question=relevant_question, context=results)
+
+    print(f"\n{response.answer}")
+    print("\nThought process:")
+    for thought in response.thought_process:
+        print(f"- {thought}")
+    print(f"\nContext: {response.enough_context}")
+    print("\nResults:")
+    for idx, result in results.iterrows():
+        print(f"Result {idx + 1}:\n{result['content']}\n")
+        print(f"Distance: {result['distance']}")
+else:
+    print(f"feedback: {feedback}")
+
+print(f"Extract from User Question using LLM Question Checker")
+print(f"Major: {major}")
+print(f"Round: {round_}")
+print(f"Program: {program}")
+print(f"Department: {department}")
 # --------------------------------------------------------------
 # Irrelevant question
 # --------------------------------------------------------------
@@ -47,7 +61,7 @@ for idx, result in results.iterrows():
 # # Metadata filtering
 # # --------------------------------------------------------------
 
-# metadata_filter = {"category": "Shipping"}
+# metadata_filter = {"major":"วศ.บ. สาขาวิชาวิศวกรรมเครื่องกล (นานาชาติ)" ,"admission_round": "2"}
 
 # results = vec.search(relevant_question, limit=3, metadata_filter=metadata_filter)
 
@@ -58,6 +72,10 @@ for idx, result in results.iterrows():
 # for thought in response.thought_process:
 #     print(f"- {thought}")
 # print(f"\nContext: {response.enough_context}")
+# print("\nResults:")
+# for idx, result in results.iterrows():
+#     print(f"Result {idx + 1}:\n{result['content']}\n")
+#     print(f"Distance: {result['distance']}")
 
 # # --------------------------------------------------------------
 # # Advanced filtering using Predicates

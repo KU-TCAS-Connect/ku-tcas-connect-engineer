@@ -17,11 +17,12 @@ class VectorStore:
         self.settings = get_settings()
         self.openai_client = OpenAI(api_key=self.settings.openai.api_key)
         self.embedding_model = self.settings.openai.embedding_model
+        self.embedding_model_dimensions = self.settings.openai.embedding_dimensions
         self.vector_settings = self.settings.vector_store
         self.vec_client = client.Sync(
-            self.settings.database.service_url,
-            self.vector_settings.table_name,
-            self.vector_settings.embedding_dimensions,
+            service_url=self.settings.database.service_url,
+            table_name=self.vector_settings.table_name,
+            num_dimensions=self.vector_settings.embedding_dimensions,
             time_partition_interval=self.vector_settings.time_partition_interval,
         )
 
@@ -41,6 +42,7 @@ class VectorStore:
             self.openai_client.embeddings.create(
                 input=[text],
                 model=self.embedding_model,
+                dimensions=self.embedding_model_dimensions
             )
             .data[0]
             .embedding

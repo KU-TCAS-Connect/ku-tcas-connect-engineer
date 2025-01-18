@@ -29,8 +29,9 @@ class OpenAISettings(LLMSettings):
     """OpenAI-specific settings extending LLMSettings."""
 
     api_key: str = Field(default_factory=lambda: os.getenv("OPENAI_API_KEY"))
-    default_model: str = Field(default="gpt-4o")
+    default_model: str = Field(default="gpt-3.5-turbo")
     embedding_model: str = Field(default="text-embedding-3-small")
+    embedding_dimensions: int = 10
 
 
 class DatabaseSettings(BaseModel):
@@ -42,8 +43,8 @@ class DatabaseSettings(BaseModel):
 class VectorStoreSettings(BaseModel):
     """Settings for the VectorStore."""
 
-    table_name: str = "embeddings"
-    embedding_dimensions: int = 1536
+    table_name: str = "embeddingsmetadatafilter"
+    embedding_dimensions: int = 10
     time_partition_interval: timedelta = timedelta(days=7)
 
 

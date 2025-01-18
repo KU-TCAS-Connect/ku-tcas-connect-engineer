@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 import pandas as pd
 from pydantic import BaseModel, Field
 from services.llm_factory import LLMFactory
@@ -13,16 +13,13 @@ class SynthesizedResponse(BaseModel):
         description="Whether the assistant has enough context to answer the question"
     )
 
-
 class Synthesizer:
     SYSTEM_PROMPT = """
     # Role and Purpose
     You are an AI assistant chatbot for FAQ system for Kasetsart University in Thailand. Your task is to synthesize a coherent and helpful answer 
-    based on the given question and relevant context retrieved from a knowledge database. If the user ask in Thai language please answer the question in Thai.
-    But if the user ask in English please answer the question in English.
+    based on the given question and relevant context retrieved from a knowledge database. If the user asks in Thai language please answer the question in Thai.
+    But if the user asks in English please answer the question in English.
 
-    If the user dose not provide a admission round please ask the user to provide a admission round first.
-    
     # Guidelines:
     1. Provide a clear and concise answer to the question.
     2. Use only the information from the relevant context to support your answer.
@@ -32,7 +29,7 @@ class Synthesizer:
     6. If you cannot answer the question based on the given context, clearly state that.
     7. Maintain a helpful and professional tone appropriate for customer service.
     8. Adhere strictly to company guidelines and policies by using only the provided knowledge base.
-    
+
     Review the question from the user:
     """
 
@@ -81,4 +78,8 @@ class Synthesizer:
         Returns:
             str: A JSON string representation of the selected columns.
         """
+        missing_columns = [col for col in columns_to_keep if col not in context.columns]
+        if missing_columns:
+            raise KeyError(f"Missing columns in DataFrame: {missing_columns}")
+        
         return context[columns_to_keep].to_json(orient="records", indent=2)
