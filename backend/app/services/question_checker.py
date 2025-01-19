@@ -43,7 +43,7 @@ class QuestionChecker:
        The term 'major' may be written in different ways, such as 'สาขาวิชา', 'สาขา', or other equivalent terms.
     2. Round as รอบการคัดเลือก (e.g., รอบการคัดเลือก: 1 will be 1). 
        The term 'round' may appear as 'รอบ', 'รอบการคัดเลือก', or other similar terms.
-    3. Program as โครงการ (e.g., โครงการ: ผู้มีความสามารถทางกีฬาดีเด่น will be ผู้มีความสามารถทางกีฬาดีเด่น). 
+    3. Program as โครงการ (e.g., โครงการผู้มีความสามารถทางกีฬาดีเด่น). 
        The term 'program' may be written as 'โครงการ' or other synonyms.
        For round 1 (รอบ 1) have follwing program:
        - เรียนล่วงหน้า
@@ -126,7 +126,6 @@ class QuestionChecker:
         # is_complete = "yes" in response_text.lower()
         # print(f"response_text_lower: {response_text.lower()}")
         
-
         # Extract major, round, program, and department from the response
         major = response.major
         round_ = response.round
