@@ -153,6 +153,10 @@ class VectorStore:
         else:
             return results
 
+    def keyword_search(self, query_text):
+        results = self.vec_client.keyword_search(query_text)
+        return results
+        
     def _create_dataframe_from_results(
         self,
         results: List[Tuple[Any, ...]],

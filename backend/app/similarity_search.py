@@ -3,6 +3,13 @@ from database.vector_store import VectorStore
 from services.synthesizer import Synthesizer
 from services.question_checker import QuestionChecker
 from timescale_vector import client
+import pythainlp
+
+def tokenize_and_search(query, text):
+    query_tokens = pythainlp.word_tokenize(query)
+    text_tokens = pythainlp.word_tokenize(text)
+    matches = [token for token in query_tokens if token in text_tokens]
+    return matches
 
 # Initialize VectorStore
 vec = VectorStore()
@@ -11,33 +18,50 @@ vec = VectorStore()
 # Shipping question
 # --------------------------------------------------------------
 
-relevant_question = "วิศวสาขาเครื่องกล ภาคปกติ รอบ 1 โครงการเรียนล่วงหน้า มีเกณฑ์การรับอย่างไรบ้างคะ"
+# relevant_question = "วิศวสาขาเครื่องกล ภาคปกติ รอบ 1 โครงการเรียนล่วงหน้า มีเกณฑ์การรับอย่างไรบ้างคะ"
+relevant_question = "วิศวคอมพิวเตอร์ ภาคปกติ รอบ 1 มีเกณฑ์การรับอย่างไรบ้างคะ"
 
-is_complete, feedback, major, round_, program, department = QuestionChecker.check_query(relevant_question)
-print(f"Complete: {is_complete}")
+# is_complete, feedback, major, round_, program, department = QuestionChecker.check_query(relevant_question)
+# print(f"Complete: {is_complete}")
 
-if is_complete:
-    results = vec.search(relevant_question, limit=3)
+# keyword = vec.keyword_search(relevant_question)
+# print(keyword)
 
-    response = Synthesizer.generate_response(question=relevant_question, context=results)
 
-    print(f"\n{response.answer}")
-    print("\nThought process:")
-    for thought in response.thought_process:
-        print(f"- {thought}")
-    print(f"\nContext: {response.enough_context}")
-    print("\nResults:")
-    for idx, result in results.iterrows():
-        print(f"Result {idx + 1}:\n{result['content']}\n")
-        print(f"Distance: {result['distance']}")
-else:
-    print(f"feedback: {feedback}")
+# if is_complete:
+results = vec.search(relevant_question, limit=3)
 
-print(f"Extract from User Question using LLM Question Checker")
-print(f"Major: {major}")
-print(f"Round: {round_}")
-print(f"Program: {program}")
-print(f"Department: {department}")
+results_before_filter = """
+Retrieved documents:
+"""
+for idx, result in results.iterrows():
+    results_before_filter += f"Retrieved documents {idx + 1}:\n{result['content']}\n"
+    results_before_filter += f"\n"
+
+# print(results_before_filter)
+response = Synthesizer.generate_response(question=relevant_question, context=results, context_before_filter=results_before_filter)
+
+print(f"\n{response.answer}")
+print("\nThought process:")
+for thought in response.thought_process:
+    print(f"- {thought}")
+print(f"\nContext: {response.enough_context}")
+print("\nResults:")
+for idx, result in results.iterrows():
+    print(f"Result {idx + 1}:\n{result['content']}\n")
+    print(f"Distance: {result['distance']}")
+    # print("test", tokenize_and_search(query=relevant_question, text=result['content']))
+# else:
+#     print(f"feedback: {feedback}")
+
+
+# print(f"Extract from User Question using LLM Question Checker")
+# print(f"Major: {major}")
+# print(f"Round: {round_}")
+# print(f"Program: {program}")
+# print(f"Department: {department}")
+
+
 # --------------------------------------------------------------
 # Irrelevant question
 # --------------------------------------------------------------
@@ -61,7 +85,8 @@ print(f"Department: {department}")
 # # Metadata filtering
 # # --------------------------------------------------------------
 
-# metadata_filter = {"major":"วศ.บ. สาขาวิชาวิศวกรรมเครื่องกล (นานาชาติ)" ,"admission_round": "2"}
+# metadata_filter = {"major":"วศ.บ. สาขาวิชาวิศวกรรมเครื่องกล (นานาชาติ)" ,"admission_round": f"{round_}"}
+# metadata_filter = {"admission_program": f"{program}" ,"admission_round": f"{round_}"}
 
 # results = vec.search(relevant_question, limit=3, metadata_filter=metadata_filter)
 
@@ -71,7 +96,7 @@ print(f"Department: {department}")
 # print("\nThought process:")
 # for thought in response.thought_process:
 #     print(f"- {thought}")
-# print(f"\nContext: {response.enough_context}")
+# print(f"\nContext: {response.enough_context}")x
 # print("\nResults:")
 # for idx, result in results.iterrows():
 #     print(f"Result {idx + 1}:\n{result['content']}\n")

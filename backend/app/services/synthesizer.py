@@ -2,6 +2,7 @@ from typing import List, Tuple
 import pandas as pd
 from pydantic import BaseModel, Field
 from services.llm_factory import LLMFactory
+from services.retrieve_filter import RetrieveFilter
 
 
 class SynthesizedResponse(BaseModel):
@@ -17,9 +18,10 @@ class Synthesizer:
     SYSTEM_PROMPT = """
     # Role and Purpose
     You are an AI assistant chatbot for FAQ system for Kasetsart University in Thailand. Your task is to synthesize a coherent and helpful answer 
-    based on the given question and relevant context retrieved from a knowledge database. If the user asks in Thai language please answer the question in Thai.
-    But if the user asks in English please answer the question in English.
-
+    based on the given question and relevant context retrieved from a knowledge database. 
+    
+    Please answer in Thai language ONLY.
+    
     # Guidelines:
     1. Provide a clear and concise answer to the question.
     2. Use only the information from the relevant context to support your answer.
@@ -34,7 +36,7 @@ class Synthesizer:
     """
 
     @staticmethod
-    def generate_response(question: str, context: pd.DataFrame) -> SynthesizedResponse:
+    def generate_response(question: str, context: pd.DataFrame, context_before_filter: str) -> SynthesizedResponse:
         """Generates a synthesized response based on the question and context.
 
         Args:
@@ -47,13 +49,14 @@ class Synthesizer:
         context_str = Synthesizer.dataframe_to_json(
             context, columns_to_keep=["content"]
         )
-
+        context_str_after_filtered = RetrieveFilter.filter(question, context_before_filter)
+        print("context_str_after_filtered", context_str_after_filtered)
         messages = [
             {"role": "system", "content": Synthesizer.SYSTEM_PROMPT},
             {"role": "user", "content": f"# User question:\n{question}"},
             {
                 "role": "assistant",
-                "content": f"# Retrieved information:\n{context_str}",
+                "content": f"# Retrieved information:\n{context_str_after_filtered}",
             },
         ]
 
