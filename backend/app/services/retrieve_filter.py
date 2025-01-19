@@ -21,7 +21,7 @@ class RetrieveFilter:
     - Answer everything in Thai
     - The engineering major in user's query and retrieved documents need to match
     - The whole context of retrieved documents and user's query need to match
-    - DO NOT GUESS and randomly pick relevant docs
+    - DO NOT GUESS and randomly pick relevant documents
     """
 
     @staticmethod

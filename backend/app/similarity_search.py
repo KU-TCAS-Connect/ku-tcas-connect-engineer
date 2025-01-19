@@ -15,42 +15,43 @@ def tokenize_and_search(query, text):
 vec = VectorStore()
 
 # --------------------------------------------------------------
-# Shipping question
+# Relevant question
 # --------------------------------------------------------------
 
-# relevant_question = "วิศวสาขาเครื่องกล ภาคปกติ รอบ 1 โครงการเรียนล่วงหน้า มีเกณฑ์การรับอย่างไรบ้างคะ"
-relevant_question = "วิศวคอมพิวเตอร์ ภาคปกติ รอบ 1 มีเกณฑ์การรับอย่างไรบ้างคะ"
+# # relevant_question = "วิศวสาขาเครื่องกล ภาคปกติ รอบ 1 โครงการเรียนล่วงหน้า มีเกณฑ์การรับอย่างไรบ้างคะ"
+# relevant_question = "วิศวคอมพิวเตอร์ ภาคปกติ รอบ 1 เรียนล่วงหน้า มีเกณฑ์การรับอย่างไรบ้างคะ"
 
 # is_complete, feedback, major, round_, program, department = QuestionChecker.check_query(relevant_question)
 # print(f"Complete: {is_complete}")
 
-# keyword = vec.keyword_search(relevant_question)
-# print(keyword)
+# # keyword = vec.keyword_search(relevant_question)
+# # print(keyword)
 
 
 # if is_complete:
-results = vec.search(relevant_question, limit=3)
+#     results = vec.search(relevant_question, limit=3)
 
-results_before_filter = """
-Retrieved documents:
-"""
-for idx, result in results.iterrows():
-    results_before_filter += f"Retrieved documents {idx + 1}:\n{result['content']}\n"
-    results_before_filter += f"\n"
+#     document_from_db_before_filter = """
+#     Retrieved documents:
+#     """
+#     for idx, result in results.iterrows():
+#         document_from_db_before_filter += f"Retrieved documents {idx + 1}:\n{result['content']}\n"
+#         document_from_db_before_filter += f"\n"
 
-# print(results_before_filter)
-response = Synthesizer.generate_response(question=relevant_question, context=results, context_before_filter=results_before_filter)
+#     print("Document from db before filter", document_from_db_before_filter)
 
-print(f"\n{response.answer}")
-print("\nThought process:")
-for thought in response.thought_process:
-    print(f"- {thought}")
-print(f"\nContext: {response.enough_context}")
-print("\nResults:")
-for idx, result in results.iterrows():
-    print(f"Result {idx + 1}:\n{result['content']}\n")
-    print(f"Distance: {result['distance']}")
-    # print("test", tokenize_and_search(query=relevant_question, text=result['content']))
+#     response = Synthesizer.generate_response(question=relevant_question, context=results, context_before_filter=document_from_db_before_filter)
+
+#     print(f"\n{response.answer}")
+#     print("\nThought process:")
+#     for thought in response.thought_process:
+#         print(f"- {thought}")
+#     print(f"\nContext: {response.enough_context}")
+#     print("\nResults:")
+#     for idx, result in results.iterrows():
+#         print(f"Result {idx + 1}:\n{result['content']}\n")
+#         print(f"Distance: {result['distance']}")
+#         # print("test", tokenize_and_search(query=relevant_question, text=result['content']))
 # else:
 #     print(f"feedback: {feedback}")
 
@@ -85,22 +86,54 @@ for idx, result in results.iterrows():
 # # Metadata filtering
 # # --------------------------------------------------------------
 
-# metadata_filter = {"major":"วศ.บ. สาขาวิชาวิศวกรรมเครื่องกล (นานาชาติ)" ,"admission_round": f"{round_}"}
-# metadata_filter = {"admission_program": f"{program}" ,"admission_round": f"{round_}"}
+# relevant_question = "วิศวสาขาเครื่องกล ภาคปกติ รอบ 1 โครงการเรียนล่วงหน้า มีเกณฑ์การรับอย่างไรบ้างคะ"
+relevant_question = "วิศวคอมพิวเตอร์ ภาคปกติ รอบ 1 เรียนล่วงหน้า มีเกณฑ์การรับอย่างไรบ้างคะ"
 
-# results = vec.search(relevant_question, limit=3, metadata_filter=metadata_filter)
+is_complete, feedback, major, round_, program, department = QuestionChecker.check_query(relevant_question)
+print(f"Complete: {is_complete}")
 
-# response = Synthesizer.generate_response(question=relevant_question, context=results)
+print(f"Extract from User Question using LLM Question Checker")
+print(f"Major: {major}")
+print(f"Round: {round_}")
+print(f"Program: {program}")
+print(f"Department: {department}")
 
-# print(f"\n{response.answer}")
-# print("\nThought process:")
-# for thought in response.thought_process:
-#     print(f"- {thought}")
-# print(f"\nContext: {response.enough_context}")x
-# print("\nResults:")
-# for idx, result in results.iterrows():
-#     print(f"Result {idx + 1}:\n{result['content']}\n")
-#     print(f"Distance: {result['distance']}")
+
+metadata_filter = {"major":"วศ.บ. สาขาวิชาวิศวกรรมเครื่องกล (นานาชาติ)" ,"admission_round": f"{round_}"}
+# metadata_filter = {"admission_program": f"โครงการ{program}" ,"admission_round": f"{round_}"}
+
+results = vec.search(relevant_question, limit=3, metadata_filter=metadata_filter)
+
+
+# keyword = vec.keyword_search(relevant_question)
+# print(keyword)
+
+if is_complete:
+    results = vec.search(relevant_question, limit=3)
+
+    document_from_db_before_filter = """
+    Retrieved documents:
+    """
+    for idx, result in results.iterrows():
+        document_from_db_before_filter += f"Retrieved documents {idx + 1}:\n{result['content']}\n"
+        document_from_db_before_filter += f"\n"
+
+    print("Document from db before filter", document_from_db_before_filter)
+
+    response = Synthesizer.generate_response(question=relevant_question, context=results, context_before_filter=document_from_db_before_filter)
+
+    print(f"\n{response.answer}")
+    print("\nThought process:")
+    for thought in response.thought_process:
+        print(f"- {thought}")
+    print(f"\nContext: {response.enough_context}")
+    print("\nResults:")
+    for idx, result in results.iterrows():
+        print(f"Result {idx + 1}:\n{result['content']}\n")
+        print(f"Distance: {result['distance']}")
+        # print("test", tokenize_and_search(query=relevant_question, text=result['content']))
+else:
+    print(f"feedback: {feedback}")
 
 # # --------------------------------------------------------------
 # # Advanced filtering using Predicates
