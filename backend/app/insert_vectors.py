@@ -32,6 +32,7 @@ def prepare_record(row, file_name):
     """
     content = (
         f"รอบการคัดเลือก: {admission_round}\\n"
+        f"โครงการ: {admission_program}\\n"
         f"สาขาวิชา: {row['สาขาวิชาที่ใช้เกณฑ์']}\n"
         f"จำนวนรับ: {row['จำนวนรับ']}\n"
         f"เงื่อนไขขั้นต่ำ: {row['เงื่อนไขขั้นต่ำ']}\n"
