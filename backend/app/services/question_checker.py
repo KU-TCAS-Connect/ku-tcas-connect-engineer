@@ -46,23 +46,22 @@ class QuestionChecker:
     3. Program as โครงการ (e.g., โครงการผู้มีความสามารถทางกีฬาดีเด่น). 
        The term 'program' may be written as 'โครงการ' or other synonyms.
        For round 1 (รอบ 1) have follwing program:
-       - เรียนล่วงหน้า
-       - นานาชาติและภาษาอังกฤษ
-       - โอลิมปิกวิชาการ
-       - ผู้มีความสามารถทางกีฬาดีเด่น
-       - ช้างเผือก
+        - เรียนล่วงหน้า
+        - นานาชาติและภาษาอังกฤษ
+        - โอลิมปิกวิชาการ
+        - ผู้มีความสามารถทางกีฬาดีเด่น
+        - ช้างเผือก
        For round 2 (รอบ 2) have follwing program:
-       รอบสอง
-       - เพชรนนทรี
-       - นานาชาติและภาษาอังกฤษ
-       - ความร่วมมือในการสร้างเครือข่ายทางการศึกษากับมหาวิทยาลัยเกษตรศาสตร์
-       - ลูกพระพิรุณ
-       - โควตา 30 จังหวัด (อันนี้ชื่อยาวอ่ะ แต่ย่อแบบนี้มั้งเท่าที่เคยเห็น)
-       - รับนักเรียนดีเด่นจากโรงเรียนสาธิตแห่งมหาวิทยาลัยเกษตรศาสตร์
-       - ผู้มีความสามารถทางกีฬา
+        - เพชรนนทรี
+        - นานาชาติและภาษาอังกฤษ
+        - ความร่วมมือในการสร้างเครือข่ายทางการศึกษากับมหาวิทยาลัยเกษตรศาสตร์
+        - ลูกพระพิรุณ
+        - โควตา 30 จังหวัด
+        - รับนักเรียนดีเด่นจากโรงเรียนสาธิตแห่งมหาวิทยาลัยเกษตรศาสตร์
+        - ผู้มีความสามารถทางกีฬา
        For round 3 (รอบ 3) have only one program:
-       - Admission
-    4. Department as ภาค (e.g., ภาค: ปกติ, ภาค: พิเศษ, ภาค: นานาชาติ). 
+        - Admission
+    4. Department as ภาค (e.g., ภาค: ปกติ, ภาค: พิเศษ, ภาค: นานาชาติ, ภาค: ภาษาอังกฤษ). 
        The term 'department' may be written as 'ภาควิชา', 'ภาค', or other equivalent terms.
     5. Condition as เงื่อนไขขั้นต่ำ
     6. Criteria as เกณฑ์การพิจารณา
@@ -71,8 +70,8 @@ class QuestionChecker:
     1. If the user does not provide a **major**, ask the user to provide a major first.
     2. If the user does not provide a **round**, ask the user to provide a round first.
     3. If the user does not provide a **program**:
-    - If it's round 3, assume the program is Admission.
-    - For other rounds, ask the user to provide a program.
+        - If it's round 3, assume the program is Admission.
+        - For other rounds, ask the user to provide a program.
     4. If the user does not provide a **department**, ask the user to provide the department first.
     5. User DOES NOT NEED to input Condtion (เงื่อนไขขั้นต่ำ) and Criteria (เกณฑ์การพิจารณา).
 
