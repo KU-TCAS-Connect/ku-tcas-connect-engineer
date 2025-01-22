@@ -20,8 +20,8 @@ def setup_logging():
 class LLMSettings(BaseModel):
     """Base settings for Language Model configurations."""
 
-    temperature: float = 0.0
-    max_tokens: Optional[int] = None
+    temperature: float = 0.3
+    max_tokens: Optional[int] = 1000
     max_retries: int = 3
 
 
