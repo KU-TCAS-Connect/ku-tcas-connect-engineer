@@ -36,7 +36,7 @@ class Synthesizer:
     """
 
     @staticmethod
-    def generate_response(question: str, context: pd.DataFrame, context_before_filter: str) -> SynthesizedResponse:
+    def generate_response(question: str, context: pd.DataFrame, context_after_filter: str) -> SynthesizedResponse:
         """Generates a synthesized response based on the question and context.
 
         Args:
@@ -49,14 +49,13 @@ class Synthesizer:
         context_str = Synthesizer.dataframe_to_json(
             context, columns_to_keep=["content"]
         )
-        context_str_after_filtered = RetrieveFilter.filter(question, context_before_filter)
-        print("context_str_after_filtered", context_str_after_filtered)
+
         messages = [
             {"role": "system", "content": Synthesizer.SYSTEM_PROMPT},
             {"role": "user", "content": f"# User question:\n{question}"},
             {
                 "role": "assistant",
-                "content": f"# Retrieved information:\n{context_str_after_filtered}",
+                "content": f"# Retrieved information:\n{context_after_filter}",
             },
         ]
 

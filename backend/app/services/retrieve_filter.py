@@ -3,12 +3,6 @@ from pydantic import BaseModel, Field
 from openai import OpenAI
 import os
 
-class RetrieveFilterResponse(BaseModel):
-    documents: List[str] = Field(
-        default=[],
-        description="A list of documents that are filtered and relevant to the user's query."
-    )
-
 class RetrieveFilter:
     """Utility class for filtering and retaining only the documents relevant to a user's query."""
 
@@ -45,15 +39,19 @@ class RetrieveFilter:
         """
 
         messages = [
-            {"role": "system", "content": RetrieveFilter.SYSTEM_PROMPT},
+            # {"role": "system", "content": RetrieveFilter.SYSTEM_PROMPT},
             {"role": "user", "content": user_message}
         ]
         client = OpenAI()
 
         # Call OpenAI API for chat completion
         completion = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=messages
+            model="gpt-4",
+            messages=messages,
+            temperature=0.3,
+            frequency_penalty=0,
+            presence_penalty=0,
+            top_p=0
         )
 
         # Extract and return the filtered documents (if available in response)
@@ -61,4 +59,4 @@ class RetrieveFilter:
 
         print("Filtered Content:", filtered_content)
         # Assuming that the filtered content will be a plain text list of documents
-        return filtered_content.split("\n")
+        return filtered_content
