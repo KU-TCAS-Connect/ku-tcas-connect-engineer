@@ -1,28 +1,38 @@
 from datetime import datetime
+from services.question_extraction import QuestionChecker, QueryCheckResponse
 from database.vector_store import VectorStore
 from services.synthesizer import Synthesizer
 from timescale_vector import client
 
 # Initialize VectorStore
-vec = VectorStore()
+# vec = VectorStore()
 
 # --------------------------------------------------------------
 # Shipping question
 # --------------------------------------------------------------
 
-relevant_question = "วิศวกรรมไฟฟ้า ภาคพิเศษ รอบ3 มีเกณฑ์การรับเป็นอย่างไรบ้างและรับกี่คนคะ"
-results = vec.search(relevant_question, limit=3)
+relevant_question = "วิศวกรรมไฟฟ้าเรียนล่วงหน้า รอบ2 ภาคปกติ มีเกณฑ์การรับเป็นอย่างไรบ้างและรับกี่คนคะ"
+thought_process, major, round_, program, program_type = QuestionChecker.extract(relevant_question, QueryCheckResponse)
 
-response = Synthesizer.generate_response(question=relevant_question, context=results)
+print(f"Extract from User Question using LLM Question Checker")
+print(thought_process)
+print(f"Major: {major}")
+print(f"Round: {round_}")
+print(f"Program: {program}")
+print(f"Program Type: {program_type}")
 
-print(f"\n{response.answer}")
-print("\nThought process:")
-for thought in response.thought_process:
-    print(f"- {thought}")
-print(f"\nContext: {response.enough_context}")
-print("\nResults:")
-for idx, result in results.iterrows():
-    print(f"Result {idx + 1}:\n{result['content']}\n")
+# results = vec.search(relevant_question, limit=3)
+
+# response = Synthesizer.generate_response(question=relevant_question, context=results)
+
+# print(f"\n{response.answer}")
+# print("\nThought process:")
+# for thought in response.thought_process:
+#     print(f"- {thought}")
+# print(f"\nContext: {response.enough_context}")
+# print("\nResults:")
+# for idx, result in results.iterrows():
+#     print(f"Result {idx + 1}:\n{result['content']}\n")
 
 # --------------------------------------------------------------
 # Irrelevant question
