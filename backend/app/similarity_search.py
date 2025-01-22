@@ -88,7 +88,7 @@ vec = VectorStore()
 # # --------------------------------------------------------------
 
 # relevant_question = "วิศวสาขาเครื่องกล ภาคปกติ รอบ 1 โครงการเรียนล่วงหน้า มีเกณฑ์การรับอย่างไรบ้างคะ"
-relevant_question = "วิศวคอมพิวเตอร์ ภาคปกติ รอบ 1 เรียนล่วงหน้า มีเกณฑ์การรับอย่างไรบ้างคะ"
+relevant_question = "วิศวไฟฟ้า ปกติ รอบ 1 เรียนล่วงหน้า มีเกณฑ์การรับอย่างไรบ้างคะ"
 
 # is_complete, feedback, major, round_, program, department = QuestionChecker.check_query(relevant_question)
 # print(f"Complete: {is_complete}")
@@ -119,22 +119,23 @@ for idx, result in results.iterrows():
     document_from_db_before_filter += f"Retrieved documents {idx + 1}:\n{result['content']}\n"
     document_from_db_before_filter += f"\n"
 
-print("Document from db before filter", document_from_db_before_filter)
+print("Document from VectorDB before filter\n", document_from_db_before_filter)
 
 context_str_after_filtered = RetrieveFilter.filter(relevant_question, document_from_db_before_filter)
-print("context_str_after_filtered", context_str_after_filtered)
+print("Filtered Document\n", context_str_after_filtered)
         
 response = Synthesizer.generate_response(question=relevant_question, context=results, context_after_filter=context_str_after_filtered)
 
+print("\nFinal Answer:")
 print(f"\n{response.answer}")
 print("\nThought process:")
 for thought in response.thought_process:
     print(f"- {thought}")
 print(f"\nContext: {response.enough_context}")
-print("\nResults:")
-for idx, result in results.iterrows():
-    print(f"Result {idx + 1}:\n{result['content']}\n")
-    print(f"Distance: {result['distance']}")
+# print("\nResults:")
+# for idx, result in results.iterrows():
+    # print(f"Result {idx + 1}:\n{result['content']}\n")
+    # print(f"Distance: {result['distance']}")
         # print("test", tokenize_and_search(query=relevant_question, text=result['content']))
 # else:
 #     print(f"feedback: {feedback}")

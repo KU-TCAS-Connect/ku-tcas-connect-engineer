@@ -56,7 +56,6 @@ class RetrieveFilter:
 
         # Extract and return the filtered documents (if available in response)
         filtered_content = completion.choices[0].message.content
-
-        print("Filtered Content:", filtered_content)
+        
         # Assuming that the filtered content will be a plain text list of documents
         return filtered_content
