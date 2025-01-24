@@ -7,10 +7,32 @@ import os
 # Initialize VectorStore
 vec = VectorStore()
 
-# List of CSV files
-csv_files = ["../data/รอบ1-1ช้างเผือก.csv", "../data/รอบ1-2ช้างเผือก.csv", "../data/รอบ1เรียนล่วงหน้า.csv", "../data/รอบ2.csv", "../data/รอบ3.csv"]
+# For Dev Only
+create_table = False
 
-def prepare_record(row, file_name):
+data_root_files = "../data"
+# List of CSV files
+csv_files = [
+    '1-0-เรียนล่วงหน้า.csv',
+    '1-1-ช้างเผือก.csv',
+    '1-1-รับนักกีฬาดีเด่น.csv',
+    '1-1-นานาชาติและภาษาอังกฤษ.csv',
+    '1-2-ช้างเผือก.csv',
+    '1-2-โอลิมปิกวิชาการ.csv',
+    '2-0-MOU.csv',
+    '2-0-โควต้า30จังหวัด.csv',
+    '2-0-เพชรนนทรี.csv',
+    '2-0-ลูกพระพิรุณ.csv',
+    '2-0-นานาชาติและภาษาอังกฤษ.csv',
+    '2-0-ผู้มีความสามารถทางกีฬา.csv',
+    '2-0-นักเรียนดีเด่นจากโรงเรียนสาธิตแห่งมหาวิทยาลัยเกษตรศาสตร์.csv',
+    '3-0-Admission.csv',
+]
+
+# admission_round = "2"
+# admission_program = "โควตานักกีฬา"
+
+def prepare_record(row, admission_round, admission_program):
     """Prepare a record for insertion into the vector store.
 
     This function creates a record with a UUID version 1 as the ID, which captures
@@ -21,8 +43,9 @@ def prepare_record(row, file_name):
         file_name: The name of the CSV file.
     """
     content = (
-        f"{file_name}\n"
-        f"สาขาวิชาที่ใช้เกณฑ์: {row['สาขาวิชาที่ใช้เกณฑ์']}\n"
+        f"รอบการคัดเลือก: {admission_round}\\n"
+        f"โครงการ: {admission_program}\\n"
+        f"สาขาวิชา: {row['สาขาวิชา']}\n"
         f"จำนวนรับ: {row['จำนวนรับ']}\n"
         f"เงื่อนไขขั้นต่ำ: {row['เงื่อนไขขั้นต่ำ']}\n"
         f"เกณฑ์การพิจารณา: {row['เกณฑ์การพิจารณา']}"
@@ -32,7 +55,10 @@ def prepare_record(row, file_name):
         {
             "id": str(uuid_from_time(datetime.now())),
             "metadata": {
-                # "category": row["category"],
+                "major": row['สาขาวิชา'],
+                "admission_round": admission_round,
+                "admission_program": admission_program,
+                "reference": row['แหล่งที่มา'],
                 "created_at": datetime.now().isoformat(),
             },
             "contents": content,
@@ -42,15 +68,25 @@ def prepare_record(row, file_name):
 
 
 # Create tables and indexes once after processing all files
-vec.create_tables()
-vec.create_index()  # DiskAnnIndex
+if create_table:
+    vec.create_tables()
+    vec.create_index()  # DiskAnnIndex
 
 for csv_file in csv_files:
+    # get round and admission program    
+    ro, sub_ro, program_t = csv_file.split("-")
+    program_type = program_t[:-4]
+    
+    if (sub_ro == '1') or (sub_ro == '2'):
+        ro += f"/{sub_ro}"
+    
+    csv_file_path = os.path.join(data_root_files, csv_file)
     # Read the CSV file
-    df = pd.read_csv(csv_file, sep=",")
+    df = pd.read_csv(csv_file_path, sep=",")
+    df_eng = df[df['คณะ'] == "คณะวิศวกรรมศาสตร์"]
     
     # Apply the prepare_record function with the file name
-    records_df = df.apply(prepare_record, axis=1, file_name=os.path.splitext(os.path.basename(csv_file))[0])
+    records_df = df_eng.apply(prepare_record, axis=1, admission_round=ro, admission_program=program_type)
     
     # Insert data into VectorStore
     vec.upsert(records_df)
